@@ -1,0 +1,20 @@
+name: The Reset refresh heartbeat
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+concurrency:
+  group: the-reset-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Refresh the feed if it is stale (public endpoint, no secret)
+        run: |
+          code=$(curl -sS -o out.json -w "%{http_code}" --max-time 260 -X POST \
+            -H "Content-Type: application/json" -H "User-Agent: TheReset-heartbeat-gha/1.0" \
+            "https://the-reset.app/api/articles/refresh-if-stale")
+          echo "HTTP $code"; cat out.json; echo
+          case "$code" in 200|429) exit 0;; *) exit 1;; esac
