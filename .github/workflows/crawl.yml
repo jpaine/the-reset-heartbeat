@@ -17,5 +17,5 @@ jobs:
             -H "Content-Type: application/json" -H "User-Agent: TheReset-heartbeat-gha/1.0" \
             "https://the-reset.app/api/articles/refresh-if-stale")
           echo "HTTP $code"; cat out.json; echo
-          case "$code" in 200|429) exit 0;; *) exit 1;; esac
+          case "$code" in 2??|429) exit 0;; *) exit 1;; esac
 # schedule registered 2026-10-11
